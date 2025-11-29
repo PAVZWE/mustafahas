@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>مجتمعي</title>
+    <style>
+        body { font-family: Arial; background: #f5f5f5; margin: 0; padding: 20px; }
+        .post { background: white; border-radius: 8px; padding: 15px; margin: 15px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        button { background: #007bff; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        input, textarea { width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+    <h1>مجتمعي</h1>
+    <div id="posts"></div>
+    
+    <script src="api.js"></script>
+    <script>
+        async function loadPosts() {
+            const posts = await getPosts();
+            const html = posts.map(post => `
+                <div class="post">
+                    <strong>${post.authorName}</strong> @${post.authorHandle}
+                    <p>${post.content}</p>
+                    <button onclick="likePost('${post.id}')">❤️ ${post.likeCount}</button>
+                    <button onclick="showComments('${post.id}')">💬 ${post.commentCount}</button>
+                </div>
+            `).join('');
+            document.getElementById('posts').innerHTML = html;
+        }
+        
+        function likePost(postId) {
+            toggleLike(postId, 'user123').then(() => loadPosts());
+        }
+        
+        function showComments(postId) {
+            alert('التعليقات: ' + postId);
+        }
+        
+        loadPosts();
+    </script>
+</body>
+</html>
+<script src="api.js"></script>
+<script>
+    // عند تحميل الصفحة، اجلب المنشورات
+    getPosts().then(posts => {
+        posts.forEach(post => {
+            console.log(post.content, "Likes:", post.likeCount);
+        });
+    });
+    
+    // عند الضغط على زر الإعجاب
+    function onLikeClick(postId) {
+        toggleLike(postId, "user123").then(result => {
+            console.log(result.liked ? "أعجبني!" : "تم إلغاء الإعجاب");
+        });
+    }
+</script>
